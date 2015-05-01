@@ -2,6 +2,7 @@ var React = require('react');
 var MessageList = require('./components/messagelist.jsx');
 var MessageForm = require('./components/messageform.jsx');
 var UsersList = require('./components/userslist.jsx');
+var ChangeNameForm = require('./components/changenameform.jsx');
 var socket = io();
 
 console.log('TEST');
@@ -13,7 +14,7 @@ var App = React.createClass({
     socket.on('send:message', this.message);
     socket.on('user:join', this.userJoin);
     socket.on('user:leave', this.userLeave);
-    //socket.on('change:name', this.changeName);
+    socket.on('change:name', this.changeName);
     return {
       messages: [],
       users: [],
@@ -61,9 +62,22 @@ var App = React.createClass({
     this.setState({messages: this.Messages});
     socket.emit('send:message', message);
   },
+  changeNameSubmit: function (newName) {
+    var $this = this;
+    var oldName = this.state.user;
+    socket.emit('change:name', {name:newName}, function (done) {
+      if (!done) {
+        alert('This name has been taken');
+      } else {
+        $this.Users.splice($this.Users.indexOf(oldName), 1, newName);
+        $this.setState({user:newName, users: $this.Users});
+      }
+    });
+  },
   render: function () {
     return (
       <div>
+        <ChangeNameForm fn={this.changeNameSubmit}/>
         <UsersList users={this.state.users}/>
         <MessageList messages={this.state.messages}/>
         <MessageForm user={this.state.user} messageSubmit={this.messageSubmit}/>

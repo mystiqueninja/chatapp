@@ -19741,6 +19741,7 @@ var React = require('react');
 var MessageList = require('./components/messagelist.jsx');
 var MessageForm = require('./components/messageform.jsx');
 var UsersList = require('./components/userslist.jsx');
+var ChangeNameForm = require('./components/changenameform.jsx');
 var socket = io();
 
 console.log('TEST');
@@ -19752,7 +19753,7 @@ var App = React.createClass({displayName: "App",
     socket.on('send:message', this.message);
     socket.on('user:join', this.userJoin);
     socket.on('user:leave', this.userLeave);
-    //socket.on('change:name', this.changeName);
+    socket.on('change:name', this.changeName);
     return {
       messages: [],
       users: [],
@@ -19800,9 +19801,22 @@ var App = React.createClass({displayName: "App",
     this.setState({messages: this.Messages});
     socket.emit('send:message', message);
   },
+  changeNameSubmit: function (newName) {
+    var $this = this;
+    var oldName = this.state.user;
+    socket.emit('change:name', {name:newName}, function (done) {
+      if (!done) {
+        alert('This name has been taken');
+      } else {
+        $this.Users.splice($this.Users.indexOf(oldName), 1, newName);
+        $this.setState({user:newName, users: $this.Users});
+      }
+    });
+  },
   render: function () {
     return (
       React.createElement("div", null, 
+        React.createElement(ChangeNameForm, {fn: this.changeNameSubmit}), 
         React.createElement(UsersList, {users: this.state.users}), 
         React.createElement(MessageList, {messages: this.state.messages}), 
         React.createElement(MessageForm, {user: this.state.user, messageSubmit: this.messageSubmit})
@@ -19812,7 +19826,31 @@ var App = React.createClass({displayName: "App",
 });
 
 React.render(React.createElement(App, null), document.body);
-},{"./components/messageform.jsx":159,"./components/messagelist.jsx":160,"./components/userslist.jsx":161,"react":156}],158:[function(require,module,exports){
+},{"./components/changenameform.jsx":158,"./components/messageform.jsx":160,"./components/messagelist.jsx":161,"./components/userslist.jsx":162,"react":156}],158:[function(require,module,exports){
+var React = require('react');
+
+module.exports = React.createClass({displayName: "exports",
+  getInitialState: function () {
+    return {text: ''};
+  },
+  changeHandle:function (e) {
+    e.preventDefault();
+    this.setState({text: e.target.value});
+  },
+  submitHandle: function (e) {
+    e.preventDefault();
+    this.props.fn(this.state.text);
+    this.setState({text: ''});
+  },
+  render: function () {
+    return (
+    React.createElement("form", {onSubmit: this.submitHandle}, 
+      React.createElement("input", {onChange: this.changeHandle, value: this.state.text})
+    )
+    );
+  }
+});
+},{"react":156}],159:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
@@ -19824,7 +19862,7 @@ module.exports = React.createClass({displayName: "exports",
     );
   }
 });
-},{"react":156}],159:[function(require,module,exports){
+},{"react":156}],160:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
@@ -19857,7 +19895,7 @@ module.exports = React.createClass({displayName: "exports",
     );
   }
 });
-},{"react":156}],160:[function(require,module,exports){
+},{"react":156}],161:[function(require,module,exports){
 var React = require('react');
 var Message = require('./message.jsx');
 
@@ -19871,7 +19909,7 @@ module.exports = React.createClass({displayName: "exports",
     );
   }
 });
-},{"./message.jsx":158,"react":156}],161:[function(require,module,exports){
+},{"./message.jsx":159,"react":156}],162:[function(require,module,exports){
 var React = require('react');
 
 module.exports = React.createClass({displayName: "exports",
@@ -19883,4 +19921,4 @@ module.exports = React.createClass({displayName: "exports",
     return React.createElement("ul", null, Users);
   }
 });
-},{"react":156}]},{},[157,158,159,160,161]);
+},{"react":156}]},{},[157,158,159,160,161,162]);
