@@ -19803,6 +19803,7 @@ var App = React.createClass({displayName: "App",
   render: function () {
     return (
       React.createElement("div", null, 
+        React.createElement(UsersList, {users: this.state.users}), 
         React.createElement(MessageList, {messages: this.state.messages}), 
         React.createElement(MessageForm, {user: this.state.user, messageSubmit: this.messageSubmit})
       )
@@ -19876,7 +19877,10 @@ var React = require('react');
 module.exports = React.createClass({displayName: "exports",
 
   render: function () {
-    return (React.createElement("div", null));
+    var Users = this.props.users.map(function (user) {
+      return React.createElement("li", null, user)  
+    }); 
+    return React.createElement("ul", null, Users);
   }
 });
 },{"react":156}]},{},[157,158,159,160,161]);

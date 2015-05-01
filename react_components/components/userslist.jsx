@@ -3,6 +3,9 @@ var React = require('react');
 module.exports = React.createClass({
 
   render: function () {
-    return (<div></div>);
+    var Users = this.props.users.map(function (user) {
+      return <li>{user}</li>  
+    }); 
+    return <ul>{Users}</ul>;
   }
 });

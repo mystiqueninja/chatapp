@@ -64,6 +64,7 @@ var App = React.createClass({
   render: function () {
     return (
       <div>
+        <UsersList users={this.state.users}/>
         <MessageList messages={this.state.messages}/>
         <MessageForm user={this.state.user} messageSubmit={this.messageSubmit}/>
       </div>
